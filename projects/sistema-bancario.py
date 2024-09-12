@@ -1,63 +1,82 @@
+import datetime
+
+"""-- 1.0
+    Sistema deve informar que não a saldo, caso não haja saldo !!
+    Todos os saques e deposito devem ser exibidos em uma variavel "extrato"!
+    Os valores deve ser exibidos no formato: R$ xxx.xx"""
+
+
 menu = """
     (c) - Consultar Saldo;
     (d) - Depositar;
     (s) - Sacar;
     (e) - Extrato;     
     (q) - Sair
-"""
+--> """
 saldo = 0
 extrato = ""
 limite_diario = 500
 cont_saques = 0
 LIMITE_SAQUE = 3
 
-usuarios = {  #Banco de Dados
-    "pedronobre": {"senha": "1234", "saldo": 50.0, "extrato": ""},
-    "brendastephanie": {"senha": "1234", "saldo": 50.0, "extrato": ""}
+usuarios = {  #Banco de Dados Usuários
+    "pedronobre": {"senha": "1234", "saldo": 0.0, "extrato": ""},
+    "brendastephanie": {"senha": "1234", "saldo": 0.0, "extrato": ""}
            }
-# Sistema deve informar que não a saldo, caso não haja saldo !!p
-# Todos os saques e deposito devem ser exibidos em uma variavel "extrato"!
-# Os valores deve ser exibidos no formato: R$ xxx.xx
+
 while True:
     print("Bem-vindo ao banco Nobre")
     login_user = input("Usurário: ")
     login_pass = input("Senha: ")
+    
 
     if login_user in usuarios and usuarios[login_user]["senha"] == login_pass:
-        print(f"Olá, {login_user},\nSaldo atual: {usuarios[login_user]["saldo"]}")
+        print(f"\nOlá, {login_user},\nSaldo atual: R$ {usuarios[login_user]["saldo"]}")
     
         while True:
             init = input(menu)
 
             if init == "c":
-                print(f"Seu saldo é: {usuarios[login_user]["saldo"]}")
+
+                agora = datetime.datetime.now()
+                print(f"Seu saldo é: R${usuarios[login_user]["saldo"]} -- Time: {agora.strftime("%d/%m/%Y %H:%M:%S")}\n ")
 
             elif init == "d":
                 
-                deposito = float(input("Insira o valor de depósito: "))
-                
-                if deposito > 0:
-                    usuarios[login_user]["saldo"] += deposito
-                    print(f"Saldo:R$ {usuarios[login_user]["saldo"]:.2f}")
-                    usuarios[login_user]["extrato"] += f"Depósito: R$ {deposito:.2f}\n"
+                try: 
+                    deposito = float(input("Insira o valor de depósito: "))
 
-                else:
-                    print("Valor informado errado, tente novamente!")
+                    if deposito > 0:
+                        usuarios[login_user]["saldo"] += deposito
+                        print(f"Saldo:R$ {usuarios[login_user]["saldo"]:.2f}")
+                        agora = datetime.datetime.now()
+                        usuarios[login_user]["extrato"] += f"Depósito: R$ {deposito:.2f} -- Time: {agora.strftime("%d/%m/%Y %H:%M:%S")}\n"
 
+                    else:
+                        print("Valor informado errado, tente novamente!")
+                except:
+                    print("Verifique o valor inserido!")
             elif init == "s":
                 
                 if cont_saques == LIMITE_SAQUE:
                     print("Você atingiu o limite de 3 saques diário!")
+
                 else:
-                    saque = float(input("Insira o valor de saque: "))
-                    
-                    if usuarios[login_user]["saldo"] >= saque and saque <= limite_diario:
-                        usuarios[login_user]["saldo"] -= saque
-                        print(f"Saque: R$ -{saque}\nSaldo Restante: R$ {usuarios[login_user]["saldo"]:.2f}")
-                        usuarios[login_user]["extrato"] += f"Saque: R$ -{saque:.2f}\n"
-                        cont_saques += 1
-                    else:
-                        print("Erro, certifique-se de que tenha o saldo em conta e o valor sacado seja inferior ao limite de R$ 500,00")
+                    try:
+                        saque = float(input("Insira o valor de saque: "))
+                        
+                        if usuarios[login_user]["saldo"] >= saque and saque <= limite_diario:
+
+                            usuarios[login_user]["saldo"] -= saque
+                            agora = datetime.datetime.now()
+                            print(f"Saque: R$ -{saque}\nSaldo Restante: R$ {usuarios[login_user]["saldo"]:.2f} ")
+                            usuarios[login_user]["extrato"] += f"Saque: R$ -{saque:.2f} -- Registro: {agora.strftime("%d/%m/%Y %H:%M:%S")}\n"
+                            cont_saques += 1
+
+                        else:
+                            print("Erro, certifique-se de que tenha o saldo em conta e o valor sacado seja inferior ao limite de R$ 500,00")
+                    except:
+                        print("Verifique o valor inserido!")
 
             elif init == "e":
 
